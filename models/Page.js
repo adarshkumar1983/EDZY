@@ -7,6 +7,11 @@ const pageSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  lastcrawled: {
+    type: Date,
+    default: Date.now,
+  },
+
   html: {
     type: String,
     required: true,
@@ -21,6 +26,24 @@ const pageSchema = new mongoose.Schema({
     },
   ],
   incomingLinks: [
+    {
+      type: String,
+    },
+  ],
+  body: {
+    type: String,
+    required: true,
+  },
+  bodyOutgoingLinks: [
+    {
+      url: String,
+      type: {
+        type: String,
+        enum: ['internal', 'external'],
+      },
+    },
+  ],
+  bodyIncomingLinks: [
     {
       type: String,
     },

@@ -1,4 +1,3 @@
-
 # Edzy Sitemap Crawler
 
 This project is a Node.js application that crawls the sitemap of a website, extracts information about internal and external links, and provides an API to access this data.
@@ -11,6 +10,7 @@ This project is a Node.js application that crawls the sitemap of a website, extr
 -   **Incoming Link Tracking**: Tracks which pages link to any given page.
 -   **API**: Provides a RESTful API to access the crawled data.
 -   **Scalable**: The crawler processes pages in parallel batches to improve performance.
+-   **Crawl Status Tracking**: Provides an endpoint to check the status of a crawl.
 
 ## Tech Stack
 
@@ -61,55 +61,72 @@ Follow these instructions to get a copy of the project up and running on your lo
     ```
     The server will start on port 3000, and you should see a message confirming the connection to the database.
 
-2.  **Start the crawl:**
-    To start the crawling process, you need to send a POST request to the `/api/crawl` endpoint using an API client like Bruno or Postman.
+2.  **Start and Monitor the Crawl:**
+    Use the API endpoints below to start the crawl and monitor its status.
 
 ## API Endpoints
 
 Here are the available API endpoints:
 
-### Start the Crawl
+### Crawler Control
 
--   **URL**: `/api/crawl`
--   **Method**: `POST`
--   **Description**: Starts the crawling process. This will populate the database with the sitemap data.
--   **Response**: `202 Accepted` with a message `{"message":"Crawling started"}`
+-   **Start the Crawl**
+    -   **URL**: `/api/crawl`
+    -   **Method**: `POST`
+    -   **Description**: Starts the crawling process. Will return an error if a crawl is already in progress.
+    -   **Response**: `202 Accepted` with a message `{"message":"Crawling started"}`
 
-### Get Incoming Links
+-   **Get Crawl Status**
+    -   **URL**: `/api/crawl-status`
+    -   **Method**: `GET`
+    -   **Description**: Returns the current status of the crawl.
+    -   **Response**:
+        ```json
+        {
+          "status": "completed",
+          "lastRun": "2025-08-22T12:00:00.000Z",
+          "error": null
+        }
+        ```
 
--   **URL**: `/api/incoming-links`
--   **Method**: `POST`
--   **Description**: Returns all the pages that link to a given URL.
--   **Body**:
-    ```json
-    {
-      "url": "https://www.edzy.ai/some-page"
-    }
-    ```
+### Page Data
 
-### Get Outgoing Links
+-   **Get Page by URL**
+    -   **URL**: `/api/page`
+    -   **Method**: `GET`
+    -   **Description**: Returns the entire database record for a single page.
+    -   **Query Parameters**:
+        -   `url`: The URL of the page to retrieve.
 
--   **URL**: `/api/outgoing-links`
--   **Method**: `POST`
--   **Description**: Returns all the pages that a given URL links out to.
--   **Body**:
-    ```json
-    {
-      "url": "https://www.edzy.ai/some-page"
-    }
-    ```
+-   **Get Incoming Links**
+    -   **URL**: `/api/incoming-links`
+    -   **Method**: `POST`
+    -   **Description**: Returns all the pages that link to a given URL.
+    -   **Body**: `{ "url": "..." }`
 
-### Get Top Linked Pages
+-   **Get Outgoing Links**
+    -   **URL**: `/api/outgoing-links`
+    -   **Method**: `POST`
+    -   **Description**: Returns all the pages that a given URL links out to.
+    -   **Body**: `{ "url": "..." }`
 
--   **URL**: `/api/top-linked`
--   **Method**: `POST`
--   **Description**: Returns the top `n` most linked-to pages.
--   **Body**:
-    ```json
-    {
-      "n": 5
-    }
-    ```
+-   **Get Top Linked Pages**
+    -   **URL**: `/api/top-linked`
+    -   **Method**: `POST`
+    -   **Description**: Returns the top `n` most linked-to pages.
+    -   **Body**: `{ "n": 5 }`
+
+-   **Get Body-Only Incoming Links**
+    -   **URL**: `/api/body-incoming-links`
+    -   **Method**: `POST`
+    -   **Description**: Returns incoming links found only in the `<body>`.
+    -   **Body**: `{ "url": "..." }`
+
+-   **Get Body-Only Outgoing Links**
+    -   **URL**: `/api/body-outgoing-links`
+    -   **Method**: `POST`
+    -   **Description**: Returns outgoing links found only in the `<body>`.
+    -   **Body**: `{ "url": "..." }`
 
 ## How It Works
 

@@ -1,0 +1,21 @@
+meta {
+  name: Get Outgoing Links
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3000/api/outgoing-links
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "url": "https://www.edzy.ai/cbse-class-10-maths"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

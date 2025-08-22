@@ -60,3 +60,57 @@ exports.getTopLinkedPages = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+exports.getBodyIncomingLinks = async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+
+    const page = await Page.findOne({ url });
+    if (!page) {
+      return res.status(404).json({ error: 'Page not found' });
+    }
+
+    res.json(page.bodyIncomingLinks);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.getBodyOutgoingLinks = async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required' });
+    }
+
+    const page = await Page.findOne({ url });
+    if (!page) {
+      return res.status(404).json({ error: 'Page not found' });
+    }
+
+    res.json(page.bodyOutgoingLinks);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.getPageByUrl = async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({ error: 'URL is required as a query parameter' });
+    }
+
+    const page = await Page.findOne({ url });
+    if (!page) {
+      return res.status(404).json({ error: 'Page not found' });
+    }
+
+    res.json(page);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
