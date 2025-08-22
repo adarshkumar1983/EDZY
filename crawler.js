@@ -7,6 +7,7 @@ const crawlerStatus = require('./crawlerStatus');
 
 const SITEMAP_URL = process.env.SITEMAP_URL;
 const BASE_URL = 'https://www.edzy.ai';
+const BATCH_SIZE = 10;
 
 const parseSitemap = (xml) => {
   return new Promise((resolve, reject) => {
@@ -21,6 +22,7 @@ const parseSitemap = (xml) => {
 
 const crawlPage = async (url, context) => {
   try {
+    console.log(`Crawling ${url}`);
     const pageResponse = await axios.get(url);
     const html = pageResponse.data;
     const $ = cheerio.load(html);
@@ -124,8 +126,12 @@ const crawl = async () => {
 
     console.log(`Found a total of ${urls.length} URLs to crawl.`);
 
-    const promises = urls.map(url => crawlPage(url, context));
-    await Promise.all(promises);
+    for (let i = 0; i < urls.length; i += BATCH_SIZE) {
+      const batch = urls.slice(i, i + BATCH_SIZE);
+      console.log(`Crawling batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(urls.length / BATCH_SIZE)}`);
+      const promises = batch.map(url => crawlPage(url, context));
+      await Promise.all(promises);
+    }
 
     console.log('--- Crawl Summary ---');
     console.log(`Successful crawls: ${context.successful}`);
